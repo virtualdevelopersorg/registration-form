@@ -1,23 +1,22 @@
 <?php
 /**
- * Plugin Name: Email Transfer
+ * Plugin Name: Register
  * Description: To transfer from one imap server to another imap server
  * Version: 1.0.0
- * Author: Tarun Kumar
- * Author URI: http://www.tarun.pro/
+ * Author: Prakash Ranjan Kumar
+ * Author URI: http://www.kumarpc.herobo.com
  * */
-function create_email_transfer_table()
+function create_registration_table()
 {
 	global $wpdb;
 	$charset_collate = $wpdb->get_charset_collate();
-	$table_name = $wpdb->prefix . 'email_transfer'; //Defining a table name.
+	$table_name = $wpdb->prefix . 'register'; //Defining a table name.
 	$sql = "CREATE TABLE $table_name(
 										id int(11) NOT NULL AUTO_INCREMENT,
                                         name varchar(200) NOT NULL,
                                         mobile_no varchar(200) NOT NULL,
-										payment_type varchar(200) NOT NULL,
-										payment_status varchar(200) NOT NULL,
-                                        email_transfer_status varchar(200) NOT NULL,						
+										email varchar(200) NOT NULL,
+										password varchar(200) NOT NULL,                        						
                                         date_time varchar(200) NOT NULL,
 										PRIMARY KEY id (id)
 									)$charset_collate;"; //Defining query to create table.
@@ -28,87 +27,108 @@ function create_email_transfer_table()
 		dbDelta($sql);
 
 }
-register_activation_hook( __FILE__, 'create_email_transfer_table' );
+register_activation_hook( __FILE__, 'create_registration_table' );
 
-//createing menu
-add_action("admin_menu","create_menus");
+//creating menu
+add_action("admin_menu","create_menu");
 	
-	function create_menus() 
+	function create_menu() 
 	{
 			add_object_page(
 							 'Register',
-							 'Registration',
+							 'Register',
 							 'install_plugins',
-							 'email-transfer',
-							 'email_transfer'
+							 'register',
+							 'register'
 						    );
+							add_submenu_page(
+                             'register',
+                             'Register',
+                             'Register',
+                             'install_plugins',
+                             'register',
+                             'register'
+                            );
     
     	    
 	}
-	//createing menu
+	//creating menu
 	
-	//This function is used to create email setting page
+	//This function is used to create registration-form	
 	
-add_shortcode('Register', 'register_shortcode');
-function register_shortcode()
+add_shortcode('Register', 'registration_shortcode');
+function registration_shortcode()
 {	
-	$email_transfer_setting_caller = $_POST['email_transfer_setting_caller'];
+	$registration_caller = $_POST['registration_caller'];
 
-	if($email_transfer_setting_caller == "self")
+	if($registration_caller == "self")
     {
-    	$api_key = strip_tags(addslashes(trim($_POST['api_key'])));
-    	$secret_key = strip_tags(addslashes(trim($_POST['secret_key'])));
-    	$token = strip_tags(addslashes(trim($_POST['token'])));
+    	$name = strip_tags(addslashes(trim($_POST['name'])));
+    	$mobile_no = strip_tags(addslashes(trim($_POST['mobile_no'])));
+    	$email = strip_tags(addslashes(trim($_POST['email'])));
+		$pass = strip_tags(addslashes(trim($_POST['pass'])));
 		
 		$errors = array();
     	
-    	if(empty($api_key)) $errors['api_key'] = "Empty";
-    	if(empty($secret_key)) $errors['secret_key'] = "Empty";
-        if(empty($token)) $errors['token'] = "Empty";
+    	if(empty($name)) $errors['name'] = "Empty";
+    	if(empty($mobile_no)) $errors['mobile_no'] = "Empty";
+        if(empty($email)) $errors['email'] = "Empty";
+		if(empty($pass)) $errors['pass'] = "Empty";
 		if(empty($errors))
 		{
 		  global $wpdb;
-		  $c=array( 
-					'api_key' => $api_key, 
-					'secret_key' => $secret_key,
-               		'token' => $token
-			    	);
-         update_option('Instamojo', $c);
+		  $wpdb->insert( 
+						   $wpdb->prefix . 'register', 
+		                   array( 
+					                'name' => $name, 
+					                'mobile_no' => $mobile_no,
+               		                'email' => $email,
+					                'password' => $pass,
+					                'date_time' => current_time('mysql', 1)
+			    	            )
+						);
 		}
 	}	
-//This function is used to create email setting page  	
+//This function is used to create registration-form	
 ?>
 	<section class="container">
 	<div class="row">
     	<div class="col-md-6">
         	 <form class="form-horizontal" method="post">
              	 <div class="form-group">
-                    <label class="control-label col-md-6" for="api_key">API Key:</label>
+                    <label class="control-label col-md-6" for="name">Name:</label>
                     <div class="col-md-6">
-                        <input type="text" class="form-control" name="api_key" id="api_key" placeholder="Enter Instamojo API Key">
-                    	<?php echo $errors['api_key']; ?>
+                        <input type="text" class="form-control" name="name" id="name" placeholder="Enter Your Name">
+                    	<?php echo $errors['name']; ?>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="control-label col-md-6" for="mobile_no">Mobile Number:</label>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="mobile_no" id="mobile_no" placeholder="Enter Your Mobile Number">
+                    	<?php echo $errors['mobile_no']; ?>
                     </div>
                 </div>
              
              	 <div class="form-group">
-                    <label class="control-label col-md-6" for="secret_key">Secret Key:</label>
+                    <label class="control-label col-md-6" for="email">Email:</label>
                     <div class="col-md-6">
-                        <input type="text" class="form-control" name="secret_key" id="secret_key" placeholder="Enter Instamojo Secret Key">
-                    	<?php echo $errors['secret_key']; ?>
+                        <input type="text" class="form-control" name="email" id="email" placeholder="Enter Your Email">
+                    	<?php echo $errors['pass']; ?>
                     </div>
                 </div>
 				
 				<div class="form-group">
-                    <label class="control-label col-md-6" for="token">Token:</label>
+                    <label class="control-label col-md-6" for="pass">Password:</label>
                     <div class="col-md-6">
-                        <input type="text" class="form-control" name="token" id="token" placeholder="Enter Instamojo Token">
-                    	<?php echo $errors['token']; ?>
+                        <input type="text" class="form-control" name="pass" id="pass" placeholder="Enter Your Password">
+                    	<?php echo $errors['pass']; ?>
                     </div>
                 </div>
 				
                 <div class="form-group">        
                 <div class="col-md-12">
-                	<input type="hidden" name="email_transfer_setting_caller" value="self">
+                	<input type="hidden" name="registration_caller" value="self">
                     <input type="submit" class="btn btn-info pull-right" value="Save">
                 </div>
                 </div>
