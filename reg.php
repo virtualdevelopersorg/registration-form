@@ -6,28 +6,7 @@
  * Author: Prakash Ranjan Kumar
  * Author URI: http://www.kumarpc.herobo.com
  * */
-function create_registration_table()
-{
-	global $wpdb;
-	$charset_collate = $wpdb->get_charset_collate();
-	$table_name = $wpdb->prefix . 'register'; //Defining a table name.
-	$sql = "CREATE TABLE $table_name(
-										id int(11) NOT NULL AUTO_INCREMENT,
-                                        name varchar(200) NOT NULL,
-                                        mobile_no varchar(200) NOT NULL,
-										email varchar(200) NOT NULL,
-										password varchar(200) NOT NULL,                        						
-                                        date_time varchar(200) NOT NULL,
-										PRIMARY KEY id (id)
-									)$charset_collate;"; //Defining query to create table.
-									
-	
-		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-    	//Creating a table in cureent wordpress
-		dbDelta($sql);
 
-}
-register_activation_hook( __FILE__, 'create_registration_table' );
 
 //creating menu
 add_action("admin_menu","create_menu");
@@ -76,19 +55,22 @@ function registration_shortcode()
 		if(empty($pass)) $errors['pass'] = "Empty";
 		if(empty($errors))
 		{
-		  global $wpdb;
-		  $wpdb->insert( 
-						   $wpdb->prefix . 'register', 
-		                   array( 
-					                'name' => $name, 
-					                'mobile_no' => $mobile_no,
-               		                'email' => $email,
-					                'password' => $pass,
-					                'date_time' => current_time('mysql', 1)
-			    	            )
-						);
+		   $userdata = array(
+                               'name' => $name,
+                               'mobile_no' => $mobile_no,
+	                           'email' => $email,
+                               'password' => $pass,
+	                           'date_time' => current_time('mysql', 1)	
+                            );
+                            $user_id = wp_insert_user( $userdata ) ;
 		}
-	}	
+       //On success
+       if ( ! is_wp_error( $user_id ) ) 
+       {
+           echo "User created : ". $user_id;
+       }
+	}
+	
 //This function is used to create registration-form	
 ?>
 	<section class="container">
