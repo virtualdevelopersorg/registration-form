@@ -7,9 +7,23 @@
  * Author URI: http://www.kumarpc.herobo.com
  * */
  
-  function add_roles_on_plugin_activation() {
-       add_role( 'custom_role', 'Custom Subscriber', array( 'read' => true, 'level_0' => true ) );
-   }
+  function add_roles_on_plugin_activation() 
+  {
+     // check role in array & insert role
+	 global $wp_roles;
+     $roles = $wp_roles->get_names();
+     if (!in_array( 'hello',$roles )) 
+     {
+	     add_role('test','hello1',
+                     array(
+                             'read'         => true,  // true allows this capability
+                             'edit_posts'   => true,
+                             'delete_posts' => false, // Use false to explicitly deny
+                          )
+                );
+     }
+	 
+}
    register_activation_hook( __FILE__, 'add_roles_on_plugin_activation' );
 //creating menu
 add_action("admin_menu","create_menu");
@@ -67,41 +81,7 @@ echo $role;
        {
            echo "User created : ". $user_id;
        }
-	   
-	   
-	/* get role by id 
-	
-         $user = wp_get_current_user();
-         echo $user->roles[0];   
-	*/
-	
-/*  list all role available in database and insert new role, display error when already exist the role
 
-     global $wp_roles;
-     $roles = $wp_roles->get_names();
-
-     // Below code will print the all list of roles.
-     //print_r($roles);
-	 foreach($roles as $role) {
-		 echo $role;
-	 }
-	 $result = add_role('hello2',__( 'hello1' ),
-     array(
-        'read'         => true,  // true allows this capability
-        'edit_posts'   => true,
-        'delete_posts' => false, // Use false to explicitly deny
-           )
-        );
-     if ( null !== $result ) 
-	 {
-	    echo 'Yay! New role created!';
-     }
-     else 
-	 {
-          echo 'Oh... the basic_contributor role already exists.';
-     }
-*/    
-	
 //This function is used to create registration-form	
 ?>
 	<section class="container">
