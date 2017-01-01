@@ -1,13 +1,17 @@
 <?php
 /**
  * Plugin Name: Register
- * Description: To transfer from one imap server to another imap server
+ * Description: To create registration-form	
  * Version: 1.0.0
  * Author: Prakash Ranjan Kumar
  * Author URI: http://www.kumarpc.herobo.com
  * */
-
-
+ 
+  function add_roles_on_plugin_activation() 
+   {
+       add_role( 'custom_role', 'Custom Subscriber', array( 'read' => true, 'level_0' => true ) );
+   }
+   register_activation_hook( __FILE__, 'add_roles_on_plugin_activation' );
 //creating menu
 add_action("admin_menu","create_menu");
 	
@@ -20,14 +24,6 @@ add_action("admin_menu","create_menu");
 							 'register',
 							 'register'
 						    );
-							add_submenu_page(
-                             'register',
-                             'Register',
-                             'Register',
-                             'install_plugins',
-                             'register',
-                             'register'
-                            );
     
     	    
 	}
@@ -35,9 +31,11 @@ add_action("admin_menu","create_menu");
 	
 	//This function is used to create registration-form	
 	
-add_shortcode('Register', 'registration_shortcode');
+add_shortcode('Registration-Form', 'registration_shortcode');
 function registration_shortcode()
 {	
+$role=get_role( $administrator  );
+echo $role;
 	$registration_caller = $_POST['registration_caller'];
 
 	if($registration_caller == "self")
@@ -64,13 +62,12 @@ function registration_shortcode()
                             );
                             $user_id = wp_insert_user( $userdata ) ;
 		}
-       //On success
+	}
+	       //On success
        if ( ! is_wp_error( $user_id ) ) 
        {
            echo "User created : ". $user_id;
-       }
-	}
-	
+       }	   	       	
 //This function is used to create registration-form	
 ?>
 	<section class="container">
