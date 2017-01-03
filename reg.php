@@ -12,7 +12,7 @@
      // check role in array & insert role
 	 global $wp_roles;
      $roles = $wp_roles->get_names();
-     if (!in_array( 'hello',$roles )) 
+     if (!in_array( 'test',$roles )) 
      {
 	     add_role('test','hello1',
                      array(
@@ -47,8 +47,7 @@ add_action("admin_menu","create_menu");
 add_shortcode('Registration-Form', 'registration_shortcode');
 function registration_shortcode()
 {	
-$role=get_role( $administrator  );
-echo $role;
+
 	$registration_caller = $_POST['registration_caller'];
 
 	if($registration_caller == "self")
@@ -57,6 +56,7 @@ echo $role;
     	$mobile_no = strip_tags(addslashes(trim($_POST['mobile_no'])));
     	$email = strip_tags(addslashes(trim($_POST['email'])));
 		$pass = strip_tags(addslashes(trim($_POST['pass'])));
+		$skill = strip_tags(addslashes(trim($_POST['skill'])));
 		
 		$errors = array();
     	
@@ -64,6 +64,7 @@ echo $role;
     	if(empty($mobile_no)) $errors['mobile_no'] = "Empty";
         if(empty($email)) $errors['email'] = "Empty";
 		if(empty($pass)) $errors['pass'] = "Empty";
+		if(empty($skill)) $errors['skill'] = "Empty";
 		if(empty($errors))
 		{
 		   $userdata = array(
@@ -81,13 +82,13 @@ echo $role;
        {
            echo "User created : ". $user_id;
        }
-
+ echo get_permalink( $post->ID );
 //This function is used to create registration-form	
 ?>
 	<section class="container">
 	<div class="row">
     	<div class="col-md-6">
-        	 <form class="form-horizontal" method="post">
+        	 <form class="form-horizontal" method="post" action="<?php get_permalink();?>">
              	 <div class="form-group">
                     <label class="control-label col-md-6" for="name">Name:</label>
                     <div class="col-md-6">
@@ -107,7 +108,7 @@ echo $role;
                     <label class="control-label col-md-6" for="email">Email:</label>
                     <div class="col-md-6">
                         <input type="text" class="form-control" name="email" id="email" placeholder="Enter Your Email">
-                    	<?php echo $errors['pass']; ?>
+                    	<?php echo $errors['email']; ?>
                     </div>
                 </div>
 				
@@ -119,6 +120,20 @@ echo $role;
                     </div>
                 </div>
 				
+				<div class="form-group">
+                    <label class="control-label col-md-6" for="pass">No. of Skills:</label>
+                    <div class="col-md-6">
+                        <select name="skill">
+						    <option value="">select</option>
+							<option value="1">One</option>
+							<option value="2">Two</option>
+							<option value="3">Three</option>
+							<option value="4">Four</option>
+							<option value="5">Five</option>
+                    	</select><?php echo $errors['skill']; ?>
+                    </div>
+                </div>
+
                 <div class="form-group">        
                 <div class="col-md-12">
                 	<input type="hidden" name="registration_caller" value="self">
