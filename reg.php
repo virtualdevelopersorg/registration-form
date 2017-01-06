@@ -86,7 +86,22 @@ function registration_shortcode()
        }
  //echo get_permalink( $post->ID );
 //This function is used to create registration-form	
+ 
+$value=4;
+$taxonomy='skill';
+ $link=get_term_by( 'term_taxonomy_id',$value, $taxonomy );
+
+	foreach ( $link as $child ) 
+	{
+        $term = $link->name;		
+	}
+    echo '<li>'. $term. '</a></li>';
+	$d="<option value=''>".$term."</option>";
+
+	
 ?>
+<style><link rel="stylesheet" type="text/css" href="/js/jquery.tokenize.css" /></style>
+
 	<section class="container">
 	<div class="row">
     	<div class="col-md-6">
@@ -125,13 +140,8 @@ function registration_shortcode()
 				<div class="form-group">
                     <label class="control-label col-md-6" for="reg_skill">No. of Skills:</label>
                     <div class="col-md-6">
-                        <select id="reg_skill">
-						    <option value="">select</option>
-							<option value="1">One</option>
-							<option value="2">Two</option>
-							<option value="3">Three</option>
-							<option value="4">Four</option>
-							<option value="5">Five</option>
+                        <select id="reg_skill" class="multiselect" multiple="multiple" >
+							<?php echo $d ?>
                     	</select><?php echo $errors['reg_skill']; ?>
                     </div>
                 </div>
@@ -143,146 +153,15 @@ function registration_shortcode()
                 </div>
                 </div>
             </form>
+
         	<label class="label label-success"><?php echo $success; ?></label>
-			<form method=post enctype='multipart/form-data' class="form-horizontal">
-			<div class="form-group">
-                <label class="control-label col-md-6" for="select_file" id="select_file_o">Select File:</label>
-                <div class="col-md-6">
-                    <input type="file" id="reg_button_o">
-                   	<?php echo $errors['select_file']; ?>
-                </div>
-            </div>
-				<div class="form-group">
-                <label class="control-label col-md-6" for="select_file" id="select_file_t">Select File:</label>
-                <div class="col-md-6">
-                    <input type="file" id="reg_button_t">
-                   	<?php echo $errors['select_file']; ?>
-                </div>
-            </div>
-				<div class="form-group">
-                <label class="control-label col-md-6" for="select_file" id="select_file_th">Select File:</label>
-                <div class="col-md-6">
-                    <input type="file" id="reg_button_th">
-                   	<?php echo $errors['select_file']; ?>
-                </div>
-            </div>
-				<div class="form-group">
-                <label class="control-label col-md-6" for="select_file" id="select_file_f">Select File:</label>
-                <div class="col-md-6">
-                    <input type="file" id="reg_button_f">
-                   	<?php echo $errors['select_file']; ?>
-                </div>
-            </div>
-		    <div class="form-group">
-                <label class="control-label col-md-6" for="select_file" id="select_file_fi">Select File:</label>
-                <div class="col-md-6">
-                    <input type="file" id="reg_button_fi">
-                   	<?php echo $errors['select_file']; ?>
-                </div>
-            </div>
-            <div class="form-group">        
-                <div class="col-md-12">
-                	
-                    <input type="submit" class="btn btn-info pull-right" value="upload" id="ub">
-                </div>
-            </div>
-			</form>
-			 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-			<script type='text/javascript'>
-			    $(document).ready( function() 
-				{
-	                $("#select_file_o").hide();
-                    $("#reg_button_o").hide();
-					$("#select_file_t").hide();
-                    $("#reg_button_t").hide();
-					$("#select_file_th").hide();
-                    $("#reg_button_th").hide();
-					$("#select_file_f").hide();
-                    $("#reg_button_f").hide();
-					$("#select_file_fi").hide();
-                    $("#reg_button_fi").hide();
-					$("#ub").hide();
-                });
-                $(document).on('change','#reg_skill', function() 
-				{
-	                var value = $('#reg_skill').val();
-                    if(value==1)
-					{
-                        $("#select_file_o").show();
-                        $("#reg_button_o").show();	
-						$("#select_file_t").hide();
-                        $("#reg_button_t").hide();
-						$("#select_file_th").hide();
-                        $("#reg_button_th").hide();
-						$("#select_file_f").hide();
-                        $("#reg_button_f").hide();
-						$("#select_file_fi").hide();
-                        $("#reg_button_fi").hide();
-						$("#ub").show();
-                    }
-					if(value==2)
-					{
-						$("#select_file_o").show();
-                        $("#reg_button_o").show();
-						$("#select_file_t").show();
-                        $("#reg_button_t").show();
-						$("#select_file_th").hide();
-                        $("#reg_button_th").hide();
-						$("#select_file_f").hide();
-                        $("#reg_button_f").hide();
-						$("#select_file_fi").hide();
-                        $("#reg_button_fi").hide();
-						$("#ub").show();
-					}
-					if(value==3)
-					{
-						$("#select_file_o").show();
-                        $("#reg_button_o").show();
-						$("#select_file_t").show();
-                        $("#reg_button_t").show();
-						$("#select_file_th").show();
-                        $("#reg_button_th").show();
-						$("#select_file_f").hide();
-                        $("#reg_button_f").hide();
-						$("#select_file_fi").hide();
-                        $("#reg_button_fi").hide();
-						$("#ub").show();
-					}
-					if(value==4)
-					{
-						$("#select_file_o").show();
-                        $("#reg_button_o").show();
-						$("#select_file_t").show();
-                        $("#reg_button_t").show();
-						$("#select_file_th").show();
-                        $("#reg_button_th").show();
-						$("#select_file_f").show();
-                        $("#reg_button_f").show();
-						$("#select_file_fi").hide();
-                        $("#reg_button_fi").hide();
-						$("#ub").show();
-					}
-					if(value==5)
-					{
-						$("#select_file_o").show();
-                        $("#reg_button_o").show();
-						$("#select_file_t").show();
-                        $("#reg_button_t").show();
-						$("#select_file_th").show();
-                        $("#reg_button_th").show();
-						$("#select_file_f").show();
-                        $("#reg_button_f").show();
-						$("#select_file_fi").show();
-                        $("#reg_button_fi").show();
-						$("#ub").show();
-					}
-                });
-				
-		   </script>
-		   
+			
     	</div>		
 	</div>
 </section>
-<?php 
+
+<?php
 }
 ?>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/jquery.tokenize.js"></script>
