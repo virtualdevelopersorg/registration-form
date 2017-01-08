@@ -87,18 +87,18 @@ function registration_shortcode()
  //echo get_permalink( $post->ID );
 //This function is used to create registration-form	
  
-$value=4;
-$taxonomy='skill';
- $link=get_term_by( 'term_taxonomy_id',$value, $taxonomy );
 
-	foreach ( $link as $child ) 
-	{
-        $term = $link->name;		
-	}
-    echo '<li>'. $term. '</a></li>';
-	$d="<option value=''>".$term."</option>";
+    $tax = 'skill';
+    // get the terms of taxonomy
+    $terms = get_terms( $tax, $args = array('hide_empty' => false,));// do not hide empty terms
+    // loop through all terms
+    foreach( $terms as $term )
+    {
+		$id=$term->term_id;
+		//echo '<li>'. $id.'</li>';
+		$d.="<option value=".$id.">".$term->name."</option>";
+    }
 
-	
 ?>
 <style><link rel="stylesheet" type="text/css" href="/js/jquery.tokenize.css" /></style>
 
@@ -140,7 +140,7 @@ $taxonomy='skill';
 				<div class="form-group">
                     <label class="control-label col-md-6" for="reg_skill">No. of Skills:</label>
                     <div class="col-md-6">
-                        <select id="reg_skill" class="multiselect" multiple="multiple" >
+                        <select id="reg_skill" class="multiselect" multiple="multiple" onchange="getCount()">
 							<?php echo $d ?>
                     	</select><?php echo $errors['reg_skill']; ?>
                     </div>
@@ -153,12 +153,31 @@ $taxonomy='skill';
                 </div>
                 </div>
             </form>
-
-        	<label class="label label-success"><?php echo $success; ?></label>
-			
-    	</div>		
+          	<label class="label label-success"><?php echo $success; ?></label>		
+    	</div>
+	
 	</div>
 </section>
+<script>
+function getCount(){
+                 var comboBoxes = document.querySelectorAll("select");
+                 var selected = [];
+                 for(var i=0,len=comboBoxes.length;i<len;i++){
+                        var combo = comboBoxes[i];
+                        var options = combo.children;
+                        for(var j=0,length=options.length;j<length;j++){
+                             var option = options[j];
+                             if(option.selected){
+                               selected.push(option.text);
+                             }
+							 
+                        }
+                 }
+
+     
+                alert("Selected Options '" + selected + "' Total Count "+ selected.length);
+             }  
+</script>
 
 <?php
 }
