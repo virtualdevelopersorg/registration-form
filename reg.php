@@ -26,9 +26,9 @@
 }
    register_activation_hook( __FILE__, 'add_roles_on_plugin_activation' );
 //creating menu
-add_action("admin_menu","create_menu");
+add_action("admin_menu","vd_registration_create_menu");
 	
-	function create_menu() 
+	function vd_registration_create_menu() 
 	{
 			add_object_page(
 							 'Register',
@@ -94,18 +94,17 @@ function registration_shortcode()
     // loop through all terms
     foreach( $terms as $term )
     {
-		$id=$term->term_id;
-		//echo '<li>'. $id.'</li>';
+		$id.=$term->term_id;
+		//$t_name.=$term->name;
+		//echo '<li>'. $t_name.'</li>';
 		$d.="<option value=".$id.">".$term->name."</option>";
     }
-
 ?>
 <style><link rel="stylesheet" type="text/css" href="/js/jquery.tokenize.css" /></style>
-
-	<section class="container">
+<section class="container">
 	<div class="row">
     	<div class="col-md-6">
-        	 <form class="form-horizontal" method="post" action="<?php get_permalink();?>">
+        	<form class="form-horizontal" method="post" action="<?php get_permalink();?>">
              	 <div class="form-group">
                     <label class="control-label col-md-6" for="reg_name">Name:</label>
                     <div class="col-md-6">
@@ -121,7 +120,7 @@ function registration_shortcode()
                     </div>
                 </div>
              
-             	 <div class="form-group">
+             	<div class="form-group">
                     <label class="control-label col-md-6" for="reg_email">Email:</label>
                     <div class="col-md-6">
                         <input type="text" class="form-control" name="reg_email" id="reg_email" placeholder="Enter Your Email">
@@ -140,45 +139,53 @@ function registration_shortcode()
 				<div class="form-group">
                     <label class="control-label col-md-6" for="reg_skill">No. of Skills:</label>
                     <div class="col-md-6">
-                        <select id="reg_skill" class="multiselect" multiple="multiple" onchange="getCount()">
-							<?php echo $d ?>
+                        <select id="reg_skill" class="multiselect" multiple="multiple">
+							<?php echo $d; ?>
                     	</select><?php echo $errors['reg_skill']; ?>
                     </div>
-                </div>
-                
+                </div>               
                 <div class="form-group">        
                 <div class="col-md-12">
                 	<input type="hidden" name="registration_caller" value="self">
-                    <input type="submit" class="btn btn-info pull-right" value="Save">
+                    <input type="submit" class="btn btn-info pull-right" value="Sign Up">
                 </div>
                 </div>
             </form>
-          	<label class="label label-success"><?php echo $success; ?></label>		
+			
+          	<label class="label label-success"><?php echo $success; ?></label>	
+            <form class="update_post" method = "POST" enctype = "multipart/form-data">
+				<div class="form-group">                 
+                    <div id="result"></div>
+                </div>
+			</form>			
     	</div>
-	
 	</div>
 </section>
 <script>
-function getCount(){
-                 var comboBoxes = document.querySelectorAll("select");
-                 var selected = [];
-                 for(var i=0,len=comboBoxes.length;i<len;i++){
-                        var combo = comboBoxes[i];
-                        var options = combo.children;
-                        for(var j=0,length=options.length;j<length;j++){
-                             var option = options[j];
-                             if(option.selected){
-                               selected.push(option.text);
-                             }
-							 
-                        }
-                 }
+$(document).on('change','#reg_skill', function() 
+{
+	var multipleValues = $("#reg_skill").val() || "";
+        var result = "";
+        if (multipleValues != "") {
+            var aVal = multipleValues.toString().split(",");
+            var count = $("#reg_skill :selected").length;
+            $.each(aVal, function(i, value) {
+				result +="<label class='control-label col-md-6'>Select File:</label>";
+                result += "<div class='col-md-6'>";
+                result += "<input type='file' name='file_name" + (parseInt(i) + 1) + "' value='" + value.trim() + "'>";
+				
+                result += "<input type='button' class='btn btn-info pull-right' id='upfile" + (parseInt(i) + 1) + "' value='Upload'"+"'>";
+               
+                result += "</div>";
+                
+            });
+        }
+        //Set Result
+        $("#result").html(result);
 
-     
-                alert("Selected Options '" + selected + "' Total Count "+ selected.length);
-             }  
+       
+});
 </script>
-
 <?php
 }
 ?>
