@@ -99,6 +99,13 @@ function registration_shortcode()
 		//echo '<li>'. $t_name.'</li>';
 		$d.="<option value=".$id.">".$term->name."</option>";
     }
+	if(isset($_POST['submit_image']))
+{
+ $uploadfile=$_FILES["upload_file"]["tmp_name"];
+ $folder="images/";
+ move_uploaded_file($_FILES["upload_file"]["tmp_name"], "$folder".$_FILES["upload_file"]["name"]);
+ exit();
+}
 ?>
 <style><link rel="stylesheet" type="text/css" href="/js/jquery.tokenize.css" /></style>
 <section class="container">
@@ -161,7 +168,9 @@ function registration_shortcode()
     	</div>
 	</div>
 </section>
+
 <script>
+
 $(document).on('change','#reg_skill', function() 
 {
 	var multipleValues = $("#reg_skill").val() || "";
@@ -184,6 +193,9 @@ $(document).on('change','#reg_skill', function()
         $("#result").html(result);
 
        
+});
+$(document).on('click','#upfile', function()  { 
+alert('hello');
 });
 </script>
 <?php
