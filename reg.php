@@ -34,7 +34,6 @@ add_action("admin_menu","vd_registration_create_menu");
 							 'Register',
 							 'Register',
 							 'install_plugins',
-							 'register',
 							 'register'
 						    );
     
@@ -99,13 +98,23 @@ function registration_shortcode()
 		//echo '<li>'. $t_name.'</li>';
 		$d.="<option value=".$id.">".$term->name."</option>";
     }
-	if(isset($_POST['submit_image']))
+
+if($user_id)
 {
- $uploadfile=$_FILES["upload_file"]["tmp_name"];
- $folder="images/";
- move_uploaded_file($_FILES["upload_file"]["tmp_name"], "$folder".$_FILES["upload_file"]["name"]);
- exit();
+	$args1 = array(
+ 'role' => 'administrator',
+ 'orderby' => 'user_nicename',
+ 'order' => 'ASC'
+);
+ $sub = get_users($args1);
+ foreach ($sub as $user) 
+ {
+	 $um=$user->display_name;
+	 $ue=$user->user_email;
+ wp_mail( $ue, "Hello",$um);
+ }
 }
+
 ?>
 <style><link rel="stylesheet" type="text/css" href="/js/jquery.tokenize.css" /></style>
 <section class="container">
@@ -168,9 +177,7 @@ function registration_shortcode()
     	</div>
 	</div>
 </section>
-
 <script>
-
 $(document).on('change','#reg_skill', function() 
 {
 	var multipleValues = $("#reg_skill").val() || "";
@@ -183,10 +190,11 @@ $(document).on('change','#reg_skill', function()
                 result += "<div class='col-md-6'>";
                 result += "<input type='file' name='file_name" + (parseInt(i) + 1) + "' value='" + value.trim() + "'>";
 				
-                result += "<input type='button' class='btn btn-info pull-right' id='upfile" + (parseInt(i) + 1) + "' value='Upload'"+"'>";
+                result += "<input type='button' class='btn btn-info pull-right' id='upfile' name='upload_button" + (parseInt(i) + 1) + "' value='Upload'"+"'>";
                
                 result += "</div>";
-                
+				
+              
             });
         }
         //Set Result
@@ -194,8 +202,15 @@ $(document).on('change','#reg_skill', function()
 
        
 });
-$(document).on('click','#upfile', function()  { 
-alert('hello');
+
+</script>
+<script>
+$(document).on('click','#upfile', function() 
+{
+	
+	var multipleValues = $("#reg_skill").val();
+	
+	alert(multipleValues);
 });
 </script>
 <?php
