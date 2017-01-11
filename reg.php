@@ -35,20 +35,15 @@ add_action("admin_menu","vd_registration_create_menu");
 							 'Register',
 							 'install_plugins',
 							 'register'
-						    );
-    
-    	    
+						    );  	    
 	}
 	//creating menu
 	
-	//This function is used to create registration-form	
-	
+	//This function is used to create registration-form		
 add_shortcode('Registration-Form', 'registration_shortcode');
 function registration_shortcode()
 {	
-
 	$registration_caller = $_POST['registration_caller'];
-
 	if($registration_caller == "self")
     {
     	$reg_name = strip_tags(addslashes(trim($_POST['reg_name'])));
@@ -64,6 +59,7 @@ function registration_shortcode()
         if(empty($reg_email)) $errors['reg_email'] = "Empty";
 		if(empty($reg_pass)) $errors['reg_pass'] = "Empty";
 		//if(empty($reg_skill)) $errors['reg_skill'] = "Empty";
+	 
 		if(empty($errors))
 		{
 		   $userdata = array(
@@ -73,9 +69,67 @@ function registration_shortcode()
 	                           'user_email' => $reg_email,
                                'user_pass' => $reg_pass,
 	                           'date_time' => current_time('mysql', 1)	
-                            );
-                            $user_id = wp_insert_user( $userdata ) ;
-		}
+                            ); 
+                       $success="Sign up sucess";
+ 		}      	
+          $user_id = wp_insert_user( $userdata ) ;	
+		if($_FILES["zip_file"]["name"]) 
+		{
+    	    $filename = $_FILES["zip_file"]["name"];
+    	    $source = $_FILES["zip_file"]["tmp_name"];
+    	    $type = $_FILES["zip_file"]["type"];
+     
+    	    $name = explode(".", $filename);
+         	$accepted_types = array('application/zip', 'application/x-zip-compressed', 'multipart/x-zip', 'application/x-compressed');
+    	    foreach($accepted_types as $mime_type) 
+			{
+    		    if($mime_type == $type) 
+				{
+    			    $okay = true;
+    			    break;
+    		    } 
+    	    } 
+     
+    	    $continue = strtolower($name[1]) == 'zip' ? true : false;
+    	    if(!$continue) 
+			{
+    		    $message = "The file you are trying to upload is not a .zip file. Please try again.";
+    	    }
+     
+            /* PHP current path */
+            $path = dirname(__FILE__).'/';  // absolute path to the directory where zipper.php is in
+            $filenoext = basename ($filename, '.zip');  // absolute path to the directory where zipper.php is in (lowercase)
+            $filenoext = basename ($filenoext, '.ZIP');  // absolute path to the directory where zipper.php is in (when uppercase)
+      
+            $targetdir = $path . $filenoext; // target directory
+            $targetzip = $path . $filename; // target zip file
+     
+            /* create directory if not exists', otherwise overwrite */
+            /* target directory is same as filename without extension */
+     
+            if (is_dir($targetdir))  rmdir_recursive ( $targetdir);
+     
+            mkdir($targetdir, 0777);
+     
+            /* here it is really happening */
+     
+    	    if(move_uploaded_file($source, $targetzip)) 
+			{
+    		    $zip = new ZipArchive();
+    		    $x = $zip->open($targetzip);  // open the zip file to extract
+    		    if ($x === true) 
+				{
+    			    $zip->extractTo($targetdir); // place in the directory with same name  
+    			    $zip->close();
+    			    unlink($targetzip);
+         		}
+    		    $message = "Your .zip file was uploaded and unpacked.";
+    	    } 
+			else
+				{	
+    		        $message = "There was a problem with the upload. Please try again.";
+    	        }
+        }
 	}
 	   //On success
        if ( is_wp_error( $user_id ) ) 
@@ -83,44 +137,42 @@ function registration_shortcode()
           $error_string = $user_id->get_error_message();
           echo '<div id="message" class="error"><p>' . $error_string . '</p></div>';
        }
- //echo get_permalink( $post->ID );
-//This function is used to create registration-form	
- 
+      //echo get_permalink( $post->ID );
+     //This function is used to create registration-form	
 
-    $tax = 'skill';
-    // get the terms of taxonomy
-    $terms = get_terms( $tax, $args = array('hide_empty' => false,));// do not hide empty terms
-    // loop through all terms
-    foreach( $terms as $term )
-    {
-		$id.=$term->term_id;
-		//$t_name.=$term->name;
-		//echo '<li>'. $t_name.'</li>';
-		$d.="<option value=".$id.">".$term->name."</option>";
-    }
+       $tax = 'skill';
+       // get the terms of taxonomy
+       $terms = get_terms( $tax, $args = array('hide_empty' => false,));// do not hide empty terms
+       // loop through all terms
+       foreach( $terms as $term )
+       {
+		   $id.=$term->term_id;
+		   //$t_name.=$term->name;
+		   //echo '<li>'. $t_name.'</li>';
+		   $d.="<option value=".$id.">".$term->name."</option>";
+        }
 
-if($user_id)
-{
-	$args1 = array(
- 'role' => 'administrator',
- 'orderby' => 'user_nicename',
- 'order' => 'ASC'
-);
- $sub = get_users($args1);
- foreach ($sub as $user) 
- {
-	 $um=$user->display_name;
-	 $ue=$user->user_email;
- wp_mail( $ue, "Hello",$um);
- }
-}
-
-?>
+        if($user_id)
+       {
+	      $args1 = array(
+                         'role' => 'administrator',
+                         'orderby' => 'user_nicename',
+                         'order' => 'ASC'
+                        );
+                $sub = get_users($args1);
+          foreach ($sub as $user) 
+          {
+	          $um=$user->display_name;
+	          $ue=$user->user_email;
+              wp_mail( $ue, "Hello",$um);
+          }
+       }
+?>  
 <style><link rel="stylesheet" type="text/css" href="/js/jquery.tokenize.css" /></style>
 <section class="container">
 	<div class="row">
     	<div class="col-md-6">
-        	<form class="form-horizontal" method="post" action="<?php get_permalink();?>">
+        	<form class="form-horizontal" method="post" action="<?php get_permalink();?>" enctype="multipart/form-data">
              	 <div class="form-group">
                     <label class="control-label col-md-6" for="reg_name">Name:</label>
                     <div class="col-md-6">
@@ -159,7 +211,8 @@ if($user_id)
 							<?php echo $d; ?>
                     	</select><?php echo $errors['reg_skill']; ?>
                     </div>
-                </div>               
+                </div>   
+                 <label>Choose a zip file to upload: <input type="file" name="zip_file" /></label>				
                 <div class="form-group">        
                 <div class="col-md-12">
                 	<input type="hidden" name="registration_caller" value="self">
@@ -168,12 +221,14 @@ if($user_id)
                 </div>
             </form>
 			
+			
           	<label class="label label-success"><?php echo $success; ?></label>	
-            <form class="update_post" method = "POST" enctype = "multipart/form-data">
+            <form enctype="multipart/form-data" method="post" action="">
 				<div class="form-group">                 
                     <div id="result"></div>
                 </div>
 			</form>			
+			<?php if($message) echo "<p>$message</p>"; ?>
     	</div>
 	</div>
 </section>
@@ -188,29 +243,14 @@ $(document).on('change','#reg_skill', function()
             $.each(aVal, function(i, value) {
 				result +="<label class='control-label col-md-6'>Select File:</label>";
                 result += "<div class='col-md-6'>";
-                result += "<input type='file' name='file_name" + (parseInt(i) + 1) + "' value='" + value.trim() + "'>";
-				
-                result += "<input type='button' class='btn btn-info pull-right' id='upfile' name='upload_button" + (parseInt(i) + 1) + "' value='Upload'"+"'>";
-               
-                result += "</div>";
-				
-              
+                result += "<input type='file' name='zip_file'>";              
+                result += "</div>";             
             });
         }
         //Set Result
         $("#result").html(result);
 
        
-});
-
-</script>
-<script>
-$(document).on('click','#upfile', function() 
-{
-	
-	var multipleValues = $("#reg_skill").val();
-	
-	alert(multipleValues);
 });
 </script>
 <?php
